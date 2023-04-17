@@ -1,0 +1,35 @@
+- hosts: ****
+  gather_facts: yes
+  become: false
+
+- name: Update resolv.conf file
+  hosts: all
+  become: true
+  tasks:
+  - name: Update resolv.conf file
+    lineinfile:
+      dest: /etc/resolv.conf
+      line: "nameserver 8.8.8.8"
+
+- name: Update /etc/hosts file
+  become: true
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^{{ item.ip }}\s+{{ item.hostname }}(\s|$)'
+    line: '{{ item.ip }} {{ item.hostname }} {{ item.alias | default("") }}'
+  with_items:
+    - { ip: '192.168.1.10', hostname: 'server1.example.com', alias: 'server1' }
+    - { ip: '192.168.1.20', hostname: 'server2.example.com', alias: 'server2' }
+
+- name: Update LDAP configurations
+  become: true
+  lineinfile:
+    path: /etc/ldap/ldap.conf
+    regexp: '^{{ item.key }}\s+.*'
+    line: '{{ item.key }} {{ item.value }}'
+  with_dict:
+    uri: ldaps://ldap.example.com/
+    base: dc=example,dc=com
+    binddn: cn=admin,dc=example,dc=com
+    bindpw: password
+    ssl: start_tls
