@@ -3,7 +3,7 @@
   tasks:
     - name: Create new directory
       file:
-        path: /home/azureuser/backup
+        path: /home/azureuser/backups
         state: directory
       tags:
         - backup
