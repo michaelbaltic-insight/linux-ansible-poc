@@ -1,6 +1,23 @@
-- hosts: ****
-  gather_facts: yes
-  become: false
+- name: Create new directory
+  hosts: localhost
+  tasks:
+    - name: Create new directory
+      file:
+        path: /home/azureuser/backup
+        state: directory
+      tags:
+        - backup
+
+- name: Copy files and create backup
+  hosts: all
+  tasks:
+    - name: Copy files and create backup
+      copy:
+        src: /etc/resolv.conf
+        dest: /home/azureuser/backups/resolve1.conf
+        backup: yes
+      tags:
+        - backup   
 
 - name: Update resolv.conf file
   hosts: all
@@ -10,7 +27,7 @@
     lineinfile:
       dest: /etc/resolv.conf
       line: "nameserver 8.8.8.8"
-
+    
 - name: Update /etc/hosts file
   become: true
   lineinfile:
